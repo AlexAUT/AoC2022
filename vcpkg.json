@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "AoC2022",
+  "version": "1.0",
+  "dependencies": [
+    "catch2",
+    "fmt",
+    "range-v3"
+  ]
+}
+
