@@ -9,9 +9,6 @@ enum class Action
   Scissors
 };
 
-template <typename T>
-T fromString(std::string_view v);
-
 template <>
 Action fromString(std::string_view v)
 {

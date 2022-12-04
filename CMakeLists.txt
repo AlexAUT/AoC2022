@@ -31,4 +31,5 @@ endfunction()
 
 add_day_target(day1)
 add_day_target(day2)
+add_day_target(day3)
 

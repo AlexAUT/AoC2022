@@ -23,3 +23,6 @@ namespace rv = ranges;
   __assume(false);
 #endif
 }
+
+template <typename T>
+T fromString(std::string_view v);
