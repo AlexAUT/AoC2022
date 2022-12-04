@@ -1,15 +1,4 @@
-#include "types.hpp"
-#include <fmt/core.h>
-
-#include <catch2/catch_test_macros.hpp>
-#include <range/v3/all.hpp>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-
-using namespace std::string_literals;
-using namespace ranges;
+#include <common.hpp>
 
 // #define RUN_TESTS
 
@@ -36,13 +25,13 @@ auto maxCalories(const std::vector<u64>& calories) -> u64
   if (calories.empty()) {
     return 0;
   }
-  return *max_element(calories);
+  return *rv::max_element(calories);
 }
 
 auto sumOfTop3Calories(std::vector<u64> calories) -> u64
 {
-  sort(calories);
-  return accumulate(views::reverse(calories) | views::take(3), 0UL);
+  rv::sort(calories);
+  return rv::accumulate(rv::views::reverse(calories) | rv::views::take(3), 0UL);
 }
 
 #ifndef RUN_TESTS

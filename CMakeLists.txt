@@ -16,14 +16,19 @@ target_link_libraries(common INTERFACE
   range-v3
 )
 target_include_directories(common INTERFACE include)
-set_target_properties(common PROPERTIES
-  CXX_STANDARD 20
-)
-
-add_executable(day1 src/day1/main.cpp)
-target_link_libraries(day1 PRIVATE common)
+set_property(TARGET common PROPERTY CXX_STANDARD 20)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(day1)
+
+function(add_day_target DAY)
+  add_executable(${DAY} src/${DAY}/main.cpp)
+  target_link_libraries(${DAY} PRIVATE common)
+  catch_discover_tests(${DAY})
+  set_property(TARGET ${DAY} PROPERTY CXX_STANDARD 20)
+endfunction()
+
+add_day_target(day1)
+add_day_target(day2)
+
