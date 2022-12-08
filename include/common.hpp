@@ -5,6 +5,7 @@
 #include <range/v3/all.hpp>
 
 #include <charconv>
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <string>

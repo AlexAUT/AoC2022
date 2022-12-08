@@ -25,7 +25,6 @@ include(Catch)
 function(add_day_target DAY)
   add_executable(${DAY} src/${DAY}/main.cpp)
   target_link_libraries(${DAY} PRIVATE common)
-  catch_discover_tests(${DAY})
   set_property(TARGET ${DAY} PROPERTY CXX_STANDARD 20)
 endfunction()
 
@@ -33,4 +32,5 @@ add_day_target(day1)
 add_day_target(day2)
 add_day_target(day3)
 add_day_target(day4)
+add_day_target(day8)
 
