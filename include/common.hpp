@@ -4,6 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <range/v3/all.hpp>
 
+#include <charconv>
 #include <iostream>
 #include <sstream>
 #include <string>
