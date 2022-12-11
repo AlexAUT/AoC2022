@@ -1,3 +1,4 @@
+vcpkg_installed/
 .cache/
 tmp/
 .ccls-cache/

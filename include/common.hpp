@@ -1,5 +1,7 @@
 #include "types.hpp"
 #include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <scn/scn.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <range/v3/all.hpp>
@@ -14,6 +16,8 @@
 #include <utility>
 
 namespace rv = ranges;
+using namespace std::string_literals;
+using namespace std::string_view_literals;
 
 [[noreturn]] inline void unreachable()
 {

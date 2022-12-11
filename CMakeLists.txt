@@ -8,12 +8,14 @@ add_library(common INTERFACE)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
+find_package(scn CONFIG REQUIRED)
 
 target_link_libraries(common INTERFACE
   Catch2::Catch2
   Catch2::Catch2WithMain
   fmt::fmt
   range-v3
+  scn::scn
 )
 target_include_directories(common INTERFACE include)
 set_property(TARGET common PROPERTY CXX_STANDARD 20)
@@ -35,4 +37,5 @@ add_day_target(day4)
 add_day_target(day8)
 add_day_target(day9)
 add_day_target(day10)
+add_day_target(day11)
 
