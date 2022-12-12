@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <queue>
 #include <utility>
 
 namespace rv = ranges;
