@@ -42,4 +42,5 @@ add_day_target(day9)
 add_day_target(day10)
 add_day_target(day11)
 add_day_target(day12)
+add_day_target(day13)
 
