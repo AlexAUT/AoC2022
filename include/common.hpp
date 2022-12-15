@@ -16,7 +16,8 @@
 #include <queue>
 #include <utility>
 
-namespace rv = ranges;
+namespace rn = ranges;
+namespace rv = ranges::views;
 using namespace std::string_literals;
 using namespace std::string_view_literals;
 
