@@ -101,14 +101,18 @@ Distances calculateDistances(const std::vector<Room>& rooms)
   return distances;
 }
 
-int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& distances, int minutes = 30)
+int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& distances, int minutes = 30,
+                              std::bitset<64> valves_to_be_ignored = {})
 {
   int64_t maxPressureRelief{};
-  std::unordered_set<int> open_valves;
+  // std::unordered_set<int> open_valves;
+  if (rooms.size() > 64)
+    throw std::runtime_error("64 rooms hard limit");
+  std::bitset<64> open_valves = valves_to_be_ignored;
   // Just open all flow_rate == 0 valves to reduce search space
-  for (auto& r : rooms) {
+  for (const auto& [i, r] : rooms | rv::enumerate) {
     if (r.flow_rate == 0)
-      open_valves.insert(r.label);
+      open_valves.set(i);
   }
   struct Ele
   {
@@ -144,7 +148,8 @@ int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& d
     const auto& room = rooms[room_index];
 
     // Try to open valve
-    if (open_valves.insert(room_label).second) {
+    if (!open_valves.test(room_index)) {
+      open_valves.set(room_index);
       advanceMin(1);
       currentFlow += room.flow_rate;
     }
@@ -154,7 +159,7 @@ int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& d
       int destIndex = history.top().visitedNeigCount;
       history.top().visitedNeigCount++;
       auto dest = rooms[destIndex];
-      if (!open_valves.contains(dest.label)) {
+      if (!open_valves.test(destIndex)) {
         auto d = distances[room_index][destIndex];
         if (currentMin + d < minutes - 1) {
           // Check if we visited this one already
@@ -177,13 +182,13 @@ int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& d
       currentFlow -= room.flow_rate;
       advanceMin(-history.top().walkTime);
       if (room.flow_rate > 0) {
-        open_valves.erase(room.label);
+        open_valves.reset(room_index);
         advanceMin(-1);
       }
       history.pop();
-      fmt::print("Pop: Stack size: {}\n", history.size());
+      // fmt::print("Pop: Stack size: {}\n", history.size());
       if (history.size() == 1) {
-        fmt::print("Back to beginning!");
+        // fmt::print("Back to beginning!");
       }
     }
   }
@@ -193,100 +198,24 @@ int64_t getMostPressureRelief(const std::vector<Room>& rooms, const Distances& d
 
 int64_t getMostPressureReliefWithHelp(const std::vector<Room>& rooms, const Distances& distances, int minutes = 26)
 {
-  // int64_t maxPressureRelief{};
-  // std::unordered_set<int> open_valves;
-  // // Just open all flow_rate == 0 valves to reduce search space
-  // for (auto& r : rooms) {
-  //   if (r.flow_rate == 0)
-  //     open_valves.insert(r.label);
-  // }
-  // struct Ele
-  // {
-  //   int roomLabel{};
-  //   int walkTime{};
-  //   int visitedNeigCount{};
-  // };
+  int64_t max_pressure{};
+  int numberOfPossibilities = 1 << 14;
+  for (uint32_t i = 0; i < numberOfPossibilities; i++) {
+    std::bitset<64> my_valves;
+    std::bitset<64> ele_valves;
 
-  // auto roomIndex = [&rooms](int label) {
-  //   return rn::distance(rn::begin(rooms), rn::find_if(rooms, [=](const Room& r) { return r.label == label; }));
-  // };
-
-  // // DFS
-  // struct Worker
-  // {
-  //   std::stack<Ele> history;
-
-  //   int currentMin{};
-  //   int currentFlow{};
-  //   int64_t pressureReliefed{};
-  // };
-
-  // std::array<Worker, 2> workers;
-
-  // for (auto& worker : workers) {
-  //   history.push({convertLabel("AA"), 0, 0});
-  // }
-
-  // auto advanceMin = [&](int offset) {
-  //   currentMin += offset;
-  //   pressureReliefed += currentFlow * offset;
-  //   if (pressureReliefed < 0)
-  //     throw std::runtime_error("Elephants died, lack of oxygen!");
-  //   if (currentMin > minutes)
-  //     throw std::runtime_error("Overtime, elephants died due to vulcano!");
-  // };
-
-  // while (!history.empty()) {
-  //   int room_label = history.top().roomLabel;
-  //   int room_index = roomIndex(room_label);
-  //   const auto& room = rooms[room_index];
-
-  //   // Try to open valve
-  //   if (open_valves.insert(room_label).second) {
-  //     advanceMin(1);
-  //     currentFlow += room.flow_rate;
-  //   }
-  //   // Push next destination
-  //   bool advanced = false;
-  //   while (history.top().visitedNeigCount < rooms.size()) {
-  //     int destIndex = history.top().visitedNeigCount;
-  //     history.top().visitedNeigCount++;
-  //     auto dest = rooms[destIndex];
-  //     if (!open_valves.contains(dest.label)) {
-  //       auto d = distances[room_index][destIndex];
-  //       if (currentMin + d < minutes - 1) {
-  //         // Check if we visited this one already
-  //         advanced = true;
-  //         history.push(Ele{.roomLabel = dest.label, .walkTime = d, .visitedNeigCount = 0});
-  //         // Go to room
-  //         advanceMin(history.top().walkTime);
-  //         // fmt::print("Push: Stack size: {}\n", history.size());
-  //         break;
-  //       }
-  //     }
-  //   }
-  //   if (!advanced) {
-  //     // Advance time to 30
-  //     auto time_left = minutes - currentMin;
-  //     advanceMin(time_left);
-  //     maxPressureRelief = std::max(maxPressureRelief, pressureReliefed);
-  //     // Roll back
-  //     advanceMin(-time_left);
-  //     currentFlow -= room.flow_rate;
-  //     advanceMin(-history.top().walkTime);
-  //     if (room.flow_rate > 0) {
-  //       open_valves.erase(room.label);
-  //       advanceMin(-1);
-  //     }
-  //     history.pop();
-  //     fmt::print("Pop: Stack size: {}\n", history.size());
-  //     if (history.size() == 1) {
-  //       fmt::print("Back to beginning!");
-  //     }
-  //   }
-  // }
-
-  // return maxPressureRelief;
+    for (uint32_t j = 0; j < 15; j++) {
+      if (i & (1 << j)) {
+        my_valves.set(j);
+      } else {
+        ele_valves.set(j);
+      }
+    }
+    auto my_val = getMostPressureRelief(rooms, distances, minutes, my_valves);
+    auto ele_val = getMostPressureRelief(rooms, distances, minutes, ele_valves);
+    max_pressure = std::max(max_pressure, my_val + ele_val);
+  }
+  return max_pressure;
 }
 
 #ifndef RUN_TESTS
@@ -297,6 +226,7 @@ auto main() -> int
   auto rooms = parseRooms(std::fstream("../../src/day16/input.txt"));
   auto distances = calculateDistances(rooms);
   fmt::print("Task1 Result: {}\n", getMostPressureRelief(rooms, distances));
+  fmt::print("Task1 Result: {}\n", getMostPressureReliefWithHelp(rooms, distances));
 }
 
 #else
@@ -342,7 +272,7 @@ Valve JJ has flow rate=21; tunnel leads to valve II)";
   }
   SECTION("Task2")
   {
-    REQUIRE(getMostPressureReliefWithHelp(rooms, distances) == 1651);
+    REQUIRE(getMostPressureReliefWithHelp(rooms, distances) == 1707);
   }
 }
 
